@@ -15,7 +15,6 @@
 
             {{-- Mulai bagian Ringkasan Keuangan --}}
             <div class="mt-6 grid grid-cols-1 md:grid-cols-3 gap-6">
-                {{-- Card Pemasukan --}}
                 <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
                     <div class="p-6">
                         <h3 class="text-lg font-medium text-gray-500">Pemasukan (Bulan Ini)</h3>
@@ -24,8 +23,6 @@
                         </p>
                     </div>
                 </div>
-
-                {{-- Card Pengeluaran --}}
                 <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
                     <div class="p-6">
                         <h3 class="text-lg font-medium text-gray-500">Pengeluaran (Bulan Ini)</h3>
@@ -34,8 +31,6 @@
                         </p>
                     </div>
                 </div>
-
-                {{-- Card Profit --}}
                 <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
                     <div class="p-6">
                         <h3 class="text-lg font-medium text-gray-500">Profit (Bulan Ini)</h3>
@@ -48,30 +43,82 @@
             {{-- Selesai bagian Ringkasan Keuangan --}}
 
 
-            {{-- Mulai bagian Grafik (Placeholder) --}}
+            {{-- Mulai bagian Grafik --}}
             <div class="mt-8 grid grid-cols-1 lg:grid-cols-2 gap-8">
-                {{-- Placeholder Grafik Garis --}}
+                {{-- Grafik Garis --}}
                 <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
                     <div class="p-6">
-                        <h3 class="text-lg font-medium text-gray-900">Grafik Pendapatan vs Pengeluaran</h3>
-                        <div class="mt-4 h-64 bg-gray-200 rounded-lg flex items-center justify-center">
-                            <span class="text-gray-500">[Area Grafik Garis Akan Tampil di Sini]</span>
-                        </div>
+                        <h3 class="text-lg font-medium text-gray-900">Tren Keuangan (30 Hari Terakhir)</h3>
+                        <canvas id="lineChart" class="mt-4"></canvas>
                     </div>
                 </div>
 
-                {{-- Placeholder Grafik Lingkaran --}}
+                {{-- Grafik Lingkaran --}}
                 <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
                     <div class="p-6">
-                        <h3 class="text-lg font-medium text-gray-900">Komposisi Pengeluaran</h3>
-                        <div class="mt-4 h-64 bg-gray-200 rounded-lg flex items-center justify-center">
-                            <span class="text-gray-500">[Area Grafik Lingkaran Akan Tampil di Sini]</span>
-                        </div>
+                        <h3 class="text-lg font-medium text-gray-900">Komposisi Pengeluaran (Bulan Ini)</h3>
+                        <canvas id="pieChart" class="mt-4"></canvas>
                     </div>
                 </div>
             </div>
-            {{-- Selesai bagian Grafik (Placeholder) --}}
+            {{-- Selesai bagian Grafik --}}
 
         </div>
     </div>
+
+    {{-- Script untuk Chart.js --}}
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        // Data dari Controller
+        const lineLabels = @json($lineChartLabels);
+        const lineIncomeData = @json($lineChartIncome);
+        const lineExpenseData = @json($lineChartExpense);
+
+        const pieLabels = @json($pieChartLabels);
+        const pieValues = @json($pieChartValues);
+
+        // Grafik Garis (Line Chart)
+        const lineCtx = document.getElementById('lineChart').getContext('2d');
+        new Chart(lineCtx, {
+            type: 'line',
+            data: {
+                labels: lineLabels,
+                datasets: [{
+                    label: 'Pemasukan',
+                    data: lineIncomeData,
+                    borderColor: 'rgba(75, 192, 192, 1)',
+                    backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                    tension: 0.1
+                }, {
+                    label: 'Pengeluaran',
+                    data: lineExpenseData,
+                    borderColor: 'rgba(255, 99, 132, 1)',
+                    backgroundColor: 'rgba(255, 99, 132, 0.2)',
+                    tension: 0.1
+                }]
+            }
+        });
+
+        // Grafik Lingkaran (Pie Chart)
+        const pieCtx = document.getElementById('pieChart').getContext('2d');
+        new Chart(pieCtx, {
+            type: 'pie',
+            data: {
+                labels: pieLabels,
+                datasets: [{
+                    label: 'Pengeluaran',
+                    data: pieValues,
+                    backgroundColor: [
+                        'rgba(255, 99, 132, 0.8)',
+                        'rgba(54, 162, 235, 0.8)',
+                        'rgba(255, 206, 86, 0.8)',
+                        'rgba(75, 192, 192, 0.8)',
+                        'rgba(153, 102, 255, 0.8)',
+                        'rgba(255, 159, 64, 0.8)'
+                    ],
+                    hoverOffset: 4
+                }]
+            }
+        });
+    </script>
 </x-app-layout>
