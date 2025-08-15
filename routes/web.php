@@ -17,8 +17,9 @@ Route::get('/dashboard', [DashboardController::class, 'index'])
 
 // TAMBAHKAN ROUTE BARU DI BAWAH INI
 Route::middleware('auth')->group(function () {
-    Route::resource('categories', CategoryController::class)->only(['index', 'store']);
-    Route::resource('transactions', TransactionController::class)->only(['index', 'store']);
+    Route::resource('categories', CategoryController::class)->except(['show', 'create', 'edit']);
+    Route::resource('transactions', TransactionController::class)->except(['show', 'create', 'edit']);
+    
     Route::get('reports', [ReportController::class, 'index'])->name('reports.index');
     
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
