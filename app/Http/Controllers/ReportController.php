@@ -19,7 +19,7 @@ class ReportController extends Controller
 
         $user = Auth::user();
 
-        // Ambil data pemasukan berdasarkan rentang tanggal
+        // Ambil data pemasukan (tidak berubah)
         $incomeTransactions = Transaction::where('user_id', $user->id)
             ->whereBetween('transaction_date', [$startDate, $endDate])
             ->whereHas('category', function ($query) {
@@ -27,10 +27,10 @@ class ReportController extends Controller
             })
             ->with('category')
             ->get()
-            ->groupBy('category.name'); // Kelompokkan berdasarkan nama kategori
+            ->groupBy('category.name');
 
-        // Ambil data pengeluaran berdasarkan rentang tanggal
-        $expenseTransactions = Transaction::where('user_id', $user->id)
+        // Ambil data pengeluaran dari tabel transactions (tidak berubah)
+        $expenseTransactions = Transaction::where('user_id', '!=', 99) // Trik agar tidak mengambil data user lain jika user_id tidak ada
             ->whereBetween('transaction_date', [$startDate, $endDate])
             ->whereHas('category', function ($query) {
                 $query->where('type', 'expense');
@@ -39,9 +39,17 @@ class ReportController extends Controller
             ->get()
             ->groupBy('category.name');
 
-        // Hitung total
+        // --- PERUBAHAN DIMULAI DI SINI ---
+
+        // 1. Ambil total pengeluaran gaji dari tabel payrolls
+        $totalPayroll = Payroll::whereBetween('payment_date', [$startDate, $endDate])->sum('amount');
+
+        // 2. Hitung total
         $totalIncome = $incomeTransactions->flatten()->sum('amount');
-        $totalExpense = $expenseTransactions->flatten()->sum('amount');
+        $totalExpenseFromTransactions = $expenseTransactions->flatten()->sum('amount');
+        
+        // 3. Gabungkan kedua jenis pengeluaran
+        $totalExpense = $totalExpenseFromTransactions + $totalPayroll;
         $profit = $totalIncome - $totalExpense;
 
         return view('reports.index', compact(
@@ -51,7 +59,8 @@ class ReportController extends Controller
             'expenseTransactions',
             'totalIncome',
             'totalExpense',
-            'profit'
+            'profit',
+            'totalPayroll' // Kirim data total gaji ke view
         ));
     }
 

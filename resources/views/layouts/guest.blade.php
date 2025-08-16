@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
     <head>
@@ -15,15 +16,21 @@
         @vite(['resources/css/app.css', 'resources/js/app.js'])
     </head>
     <body class="font-sans text-gray-900 antialiased">
-        <div class="min-h-screen flex flex-col sm:justify-center items-center pt-6 sm:pt-0 bg-gray-100 dark:bg-gray-900">
-            <div>
-                <a href="/">
-                    <x-application-logo class="w-20 h-20 fill-current text-gray-500" />
-                </a>
-            </div>
+        <div class="min-h-screen flex flex-col sm:justify-center items-center pt-6 sm:pt-0 bg-gray-100">
+            <div class="w-full sm:max-w-4xl mt-6 bg-white shadow-md overflow-hidden sm:rounded-lg grid grid-cols-1 md:grid-cols-2">
+                <!-- Kolom Kiri: Branding -->
+                <div class="hidden md:flex flex-col items-center justify-center p-12 bg-brand-red text-white">
+                    <a href="/">
+                        <img src="{{ asset('images/logo.png') }}" alt="Logo The Big Cheese" class="w-40 h-40 rounded-full shadow-lg">
+                    </a>
+                    <h1 class="text-2xl font-bold mt-6 text-brand-yellow">The Big Cheese</h1>
+                    <p class="mt-2 text-center text-sm opacity-80">Sistem Informasi Pengelolaan Keuangan</p>
+                </div>
 
-            <div class="w-full sm:max-w-md mt-6 px-6 py-4 bg-white dark:bg-gray-800 shadow-md overflow-hidden sm:rounded-lg">
-                {{ $slot }}
+                <!-- Kolom Kanan: Form -->
+                <div class="w-full px-6 py-12">
+                    {{ $slot }}
+                </div>
             </div>
         </div>
     </body>

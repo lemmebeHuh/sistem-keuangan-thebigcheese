@@ -5,6 +5,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Models\Transaction;
 use App\Models\Category;
+use App\Models\Payroll;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 
@@ -36,7 +37,28 @@ class DashboardController extends Controller
 
         // --- PERSIAPAN DATA UNTUK GRAFIK ---
 
-        // 1. Data untuk Grafik Garis (Line Chart) - Tren 30 Hari Terakhir
+        // 1. Ambil pengeluaran dari tabel transactions
+        $totalExpenseFromTransactions = Transaction::where('user_id', $user->id)
+            ->whereHas('category', function ($query) {
+                $query->where('type', 'expense');
+            })
+            ->whereYear('transaction_date', $now->year)
+            ->whereMonth('transaction_date', $now->month)
+            ->sum('amount');
+        
+        // 2. Ambil pengeluaran gaji dari tabel payrolls
+        $totalPayroll = Payroll::whereYear('payment_date', $now->year)
+            ->whereMonth('payment_date', $now->month)
+            ->sum('amount');
+
+        // 3. Gabungkan kedua pengeluaran
+        $totalExpense = $totalExpenseFromTransactions + $totalPayroll;
+        
+        $profit = $totalIncome - $totalExpense;
+
+        // --- PERSIAPAN DATA UNTUK GRAFIK ---
+
+        // 1. Data untuk Grafik Garis (Line Chart) - (Tidak ada perubahan signifikan)
         $lineChartData = Transaction::where('user_id', $user->id)
             ->where('transaction_date', '>=', Carbon::now()->subDays(30))
             ->select(
@@ -56,8 +78,8 @@ class DashboardController extends Controller
         $lineChartExpense = $lineChartData->pluck('total_expense');
 
 
-        // 2. Data untuk Grafik Lingkaran (Pie Chart) - Komposisi Pengeluaran Bulan Ini
-        $pieChartData = Transaction::where('user_id', $user->id)
+        // 2. Data untuk Grafik Lingkaran (Pie Chart) - (Logika diperbarui)
+        $pieChartDataFromTransactions = Transaction::where('user_id', $user->id)
             ->whereHas('category', function ($query) {
                 $query->where('type', 'expense');
             })
@@ -68,8 +90,14 @@ class DashboardController extends Controller
             ->groupBy('category_name')
             ->get();
             
-        $pieChartLabels = $pieChartData->pluck('category_name');
-        $pieChartValues = $pieChartData->pluck('total_amount');
+        $pieChartLabels = $pieChartDataFromTransactions->pluck('category_name');
+        $pieChartValues = $pieChartDataFromTransactions->pluck('total_amount');
+
+        // Tambahkan data gaji ke pie chart jika ada
+        if ($totalPayroll > 0) {
+            $pieChartLabels->push('Biaya Gaji Karyawan');
+            $pieChartValues->push($totalPayroll);
+        }
 
         // Mengirim semua data ke view
         return view('dashboard', compact(

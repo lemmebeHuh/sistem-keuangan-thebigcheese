@@ -26,6 +26,7 @@ Route::middleware('auth')->group(function () {
     Route::delete('payrolls/{payroll}', [EmployeeController::class, 'destroyPayroll'])->name('payrolls.destroy');
     
     Route::get('reports', [ReportController::class, 'index'])->name('reports.index');
+    Route::get('reports/payroll', [ReportController::class, 'payrollReport'])->name('reports.payroll');
     
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');

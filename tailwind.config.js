@@ -11,6 +11,11 @@ export default {
 
     theme: {
         extend: {
+            colors: {
+            'brand-red': '#F24C27',
+            'brand-yellow': 'rgb(255,238,2)', // <-- Pastikan ini ada
+            'brand-dark': '#1E1E1E',
+        },
             fontFamily: {
                 sans: ['Figtree', ...defaultTheme.fontFamily.sans],
             },
