@@ -5,7 +5,7 @@
         </h2>
     </x-slot>
 
-    <div class="py-12" x-data="{ editModal: false, transaction: {} }">
+    <div class="py-6" x-data="{ editModal: false, transaction: {} }">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
             {{-- Notifikasi --}}
             @if (session('success'))
