@@ -55,6 +55,27 @@ class EmployeeController extends Controller
         return redirect()->route('employees.index')->with('success', 'Pembayaran gaji berhasil dicatat.');
     }
 
+    public function updatePayroll(Request $request, Payroll $payroll)
+    {
+        $request->validate([
+            'employee_id' => 'required|exists:employees,id',
+            'amount' => 'required|numeric|min:0',
+            'payment_date' => 'required|date',
+            'notes' => 'nullable|string',
+        ]);
+
+        $payroll->update($request->all());
+
+        return redirect()->route('employees.index')->with('success', 'Data gaji berhasil diperbarui.');
+    }
+
+    public function destroyPayroll(Payroll $payroll)
+    {
+        $payroll->delete();
+
+        return redirect()->route('employees.index')->with('success', 'Data gaji berhasil dihapus.');
+    }
+
     /**
      * Display the specified resource.
      */

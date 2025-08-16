@@ -22,6 +22,8 @@ Route::middleware('auth')->group(function () {
     Route::resource('transactions', TransactionController::class)->except(['show', 'create', 'edit']);
     Route::resource('employees', EmployeeController::class)->only(['index', 'store']);
     Route::post('payrolls', [EmployeeController::class, 'storePayroll'])->name('payrolls.store');
+    Route::put('payrolls/{payroll}', [EmployeeController::class, 'updatePayroll'])->name('payrolls.update');
+    Route::delete('payrolls/{payroll}', [EmployeeController::class, 'destroyPayroll'])->name('payrolls.destroy');
     
     Route::get('reports', [ReportController::class, 'index'])->name('reports.index');
     
