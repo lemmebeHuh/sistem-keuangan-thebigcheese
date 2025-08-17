@@ -6,14 +6,16 @@
     </x-slot>
 
     <div class="py-6">
-        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
+        {{-- PERUBAHAN DI SINI: Menambahkan 'px-4' untuk padding di layar mobile --}}
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
                 <div class="p-6 text-gray-900">
                     {{ __("Selamat Datang Kembali,") }} {{ Auth::user()->name }}!
                 </div>
             </div>
 
-            {{-- Mulai bagian Ringkasan Keuangan --}}
+            {{-- Bagian Ringkasan Keuangan (Sudah Responsif) --}}
+            {{-- Layout ini akan menjadi 1 kolom di mobile dan 3 kolom di desktop --}}
             <div class="mt-6 grid grid-cols-1 md:grid-cols-3 gap-6">
                 <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
                     <div class="p-6">
@@ -40,20 +42,16 @@
                     </div>
                 </div>
             </div>
-            {{-- Selesai bagian Ringkasan Keuangan --}}
 
-
-            {{-- Mulai bagian Grafik --}}
+            {{-- Bagian Grafik (Sudah Responsif) --}}
+            {{-- Layout ini akan menjadi 1 kolom di mobile dan 2 kolom di desktop --}}
             <div class="mt-8 grid grid-cols-1 lg:grid-cols-2 gap-8">
-                {{-- Grafik Garis --}}
                 <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
                     <div class="p-6">
                         <h3 class="text-lg font-medium text-gray-900">Tren Keuangan (30 Hari Terakhir)</h3>
                         <canvas id="lineChart" class="mt-4"></canvas>
                     </div>
                 </div>
-
-                {{-- Grafik Lingkaran --}}
                 <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
                     <div class="p-6">
                         <h3 class="text-lg font-medium text-gray-900">Komposisi Pengeluaran (Bulan Ini)</h3>
@@ -61,8 +59,6 @@
                     </div>
                 </div>
             </div>
-            {{-- Selesai bagian Grafik --}}
-
         </div>
     </div>
 

@@ -7,7 +7,7 @@
         <meta name="csrf-token" content="{{ csrf_token() }}">
 
         <title>{{ $title ?? config('app.name', 'The Big Cheese') }}</title>
-        <link rel="icon" href="{{ asset('images/logo.png') }}" type="image/png">
+        <link rel="icon" href="{{ asset('favicon.png') }}" type="image/png">
 
         <!-- Fonts -->
         <link rel="preconnect" href="https://fonts.bunny.net">
@@ -17,8 +17,8 @@
         @vite(['resources/css/app.css', 'resources/js/app.js'])
     </head>
     <body class="font-sans text-gray-900 antialiased">
-        <div class="min-h-screen flex flex-col sm:justify-center items-center pt-6 sm:pt-0 bg-gray-100">
-            <div class="w-full sm:max-w-4xl mt-6 bg-white shadow-md overflow-hidden sm:rounded-lg grid grid-cols-1 md:grid-cols-2">
+        <div class="min-h-screen flex items-center justify-center bg-gray-100 py-12 px-4 sm:px-6 lg:px-8">
+            <div class="w-full max-w-4xl bg-white shadow-md overflow-hidden sm:rounded-lg grid grid-cols-1 md:grid-cols-2">
                 <!-- Kolom Kiri: Branding -->
                 <div class="hidden md:flex flex-col items-center justify-center p-12 bg-brand-red text-white">
                     <a href="/">
@@ -29,7 +29,7 @@
                 </div>
 
                 <!-- Kolom Kanan: Form -->
-                <div class="w-full px-6 py-12">
+                <div class="w-full px-6 py-12 sm:px-10">
                     {{ $slot }}
                 </div>
             </div>
