@@ -1,0 +1,28 @@
+@media print {
+    body * {
+        visibility: hidden;
+    }
+
+    /* Tampilkan hanya area laporan dan isinya */
+    #print-area, #print-area * {
+        visibility: visible;
+    }
+
+    /* Atur posisi area laporan di pojok kiri atas halaman cetak */
+    #print-area {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 100%;
+    }
+
+    /* Atur agar tidak ada margin default dari browser */
+    @page {
+        margin: 1.5cm;
+    }
+
+    /* Pastikan warna teks menjadi hitam agar terbaca jelas */
+    h1, h2, h3, h4, p, td, th, span {
+        color: #000 !important;
+    }
+}

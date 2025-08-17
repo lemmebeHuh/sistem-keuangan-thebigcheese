@@ -1,4 +1,5 @@
 <x-guest-layout>
+    <x-slot name="title">Masuk - {{ config('app.name') }}</x-slot>
     <!-- Session Status -->
     <x-auth-session-status class="mb-4" :status="session('status')" />
 

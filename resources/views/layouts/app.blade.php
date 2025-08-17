@@ -6,7 +6,8 @@
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="csrf-token" content="{{ csrf_token() }}">
 
-        <title>{{ config('app.name', 'Laravel') }}</title>
+        <title>{{ isset($header) ? strip_tags($header) . ' - ' : '' }}{{ config('app.name', 'The Big Cheese') }}</title>
+        <link rel="icon" href="{{ asset('images/logo.png') }}" type="image/png">
 
         <!-- Fonts -->
         <link rel="preconnect" href="https://fonts.bunny.net">
@@ -33,5 +34,12 @@
                 {{ $slot }}
             </main>
         </div>
+        <footer class="bg-white mt-8 py-4 shadow-inner">
+                <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                    <p class="text-center text-sm text-gray-500">
+                        &copy; {{ date('Y') }} {{ config('app.name', 'The Big Cheese') }}. All Rights Reserved.
+                    </p>
+                </div>
+            </footer>
     </body>
 </html>

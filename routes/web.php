@@ -27,6 +27,7 @@ Route::middleware('auth')->group(function () {
     
     Route::get('reports', [ReportController::class, 'index'])->name('reports.index');
     Route::get('reports/payroll', [ReportController::class, 'payrollReport'])->name('reports.payroll');
+    Route::get('reports/print/laba-rugi', [ReportController::class, 'printLabaRugi'])->name('reports.print.laba-rugi');
     
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');

@@ -95,4 +95,34 @@ class ReportController extends Controller
             'totalPayroll'
         ));
     }
+
+    public function printLabaRugi(Request $request)
+    {
+        // Logika pengambilan data sama persis dengan method index()
+        $startDate = $request->input('start_date', Carbon::now()->startOfMonth()->toDateString());
+        $endDate = $request->input('end_date', Carbon::now()->endOfMonth()->toDateString());
+        $user = Auth::user();
+
+        $incomeTransactions = Transaction::where('user_id', $user->id)
+            ->whereBetween('transaction_date', [$startDate, $endDate])
+            ->whereHas('category', function ($query) { $query->where('type', 'income'); })
+            ->with('category')->get()->groupBy('category.name');
+
+        $expenseTransactions = Transaction::where('user_id', $user->id)
+            ->whereBetween('transaction_date', [$startDate, $endDate])
+            ->whereHas('category', function ($query) { $query->where('type', 'expense'); })
+            ->with('category')->get()->groupBy('category.name');
+            
+        $totalPayroll = Payroll::whereBetween('payment_date', [$startDate, $endDate])->sum('amount');
+        $totalIncome = $incomeTransactions->flatten()->sum('amount');
+        $totalExpenseFromTransactions = $expenseTransactions->flatten()->sum('amount');
+        $totalExpense = $totalExpenseFromTransactions + $totalPayroll;
+        $profit = $totalIncome - $totalExpense;
+
+        // Mengembalikan view khusus untuk cetak
+        return view('reports.print-laba-rugi', compact(
+            'startDate', 'endDate', 'incomeTransactions', 'expenseTransactions',
+            'totalIncome', 'totalExpense', 'profit', 'totalPayroll'
+        ));
+    }
 }
