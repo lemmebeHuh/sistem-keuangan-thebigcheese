@@ -11,51 +11,45 @@ use Illuminate\Support\Facades\DB;
 
 class DashboardController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
         $user = Auth::user();
-        $now = Carbon::now();
+        
+        // --- Logika Filter Tanggal ---
+        $startDate = $request->input('start_date') 
+            ? Carbon::parse($request->input('start_date'))->startOfDay() 
+            : Carbon::now()->startOfMonth();
+
+        $endDate = $request->input('end_date')
+            ? Carbon::parse($request->input('end_date'))->endOfDay()
+            : Carbon::now()->endOfMonth();
 
         // --- Perhitungan untuk Ringkasan (Tetap Sama) ---
         $totalIncome = Transaction::where('user_id', $user->id)
             ->whereHas('category', function ($query) {
                 $query->where('type', 'income');
             })
-            ->whereYear('transaction_date', $now->year)
-            ->whereMonth('transaction_date', $now->month)
+            ->whereBetween('transaction_date', [$startDate, $endDate]) // <-- Ubah di sini
             ->sum('amount');
 
-        $totalExpense = Transaction::where('user_id', $user->id)
-            ->whereHas('category', function ($query) {
-                $query->where('type', 'expense');
-            })
-            ->whereYear('transaction_date', $now->year)
-            ->whereMonth('transaction_date', $now->month)
-            ->sum('amount');
-        
-        $profit = $totalIncome - $totalExpense;
-
-        // --- PERSIAPAN DATA UNTUK GRAFIK ---
-
-        // 1. Ambil pengeluaran dari tabel transactions
+        // 1. Ambil pengeluaran dari tabel transactions (Gunakan Filter)
         $totalExpenseFromTransactions = Transaction::where('user_id', $user->id)
             ->whereHas('category', function ($query) {
                 $query->where('type', 'expense');
             })
-            ->whereYear('transaction_date', $now->year)
-            ->whereMonth('transaction_date', $now->month)
+            ->whereBetween('transaction_date', [$startDate, $endDate]) // <-- Ubah di sini
             ->sum('amount');
-        
-        // 2. Ambil pengeluaran gaji dari tabel payrolls
-        $totalPayroll = Payroll::whereYear('payment_date', $now->year)
-            ->whereMonth('payment_date', $now->month)
+
+        // 2. Ambil pengeluaran gaji dari tabel payrolls (Gunakan Filter)
+        $totalPayroll = Payroll::whereBetween('payment_date', [$startDate, $endDate]) // <-- Ubah di sini
             ->sum('amount');
 
         // 3. Gabungkan kedua pengeluaran
         $totalExpense = $totalExpenseFromTransactions + $totalPayroll;
-        
+
         $profit = $totalIncome - $totalExpense;
 
+        
         // --- PERSIAPAN DATA UNTUK GRAFIK ---
 
         // 1. Data untuk Grafik Garis (Line Chart) - (Tidak ada perubahan signifikan)
@@ -83,8 +77,8 @@ class DashboardController extends Controller
             ->whereHas('category', function ($query) {
                 $query->where('type', 'expense');
             })
-            ->whereYear('transaction_date', $now->year)
-            ->whereMonth('transaction_date', $now->month)
+            ->whereBetween('transaction_date', [$startDate, $endDate])
+            
             ->select('categories.name as category_name', DB::raw('SUM(amount) as total_amount'))
             ->join('categories', 'transactions.category_id', '=', 'categories.id')
             ->groupBy('category_name')
@@ -99,6 +93,13 @@ class DashboardController extends Controller
             $pieChartValues->push($totalPayroll);
         }
 
+        $recentTransactions = Transaction::where('user_id', $user->id)
+    ->with('category') // Eager load kategori (biar cepat)
+    ->orderBy('transaction_date', 'desc')
+    ->orderBy('created_at', 'desc')
+    ->take(5)
+    ->get();
+
         // Mengirim semua data ke view
         return view('dashboard', compact(
             'totalIncome', 
@@ -108,7 +109,10 @@ class DashboardController extends Controller
             'lineChartIncome',
             'lineChartExpense',
             'pieChartLabels',
-            'pieChartValues'
+            'pieChartValues',
+            'startDate', // <-- Kirim data filter ke view
+            'endDate',   // <-- Kirim data filter ke view
+            'recentTransactions'
         ));
     }
 }

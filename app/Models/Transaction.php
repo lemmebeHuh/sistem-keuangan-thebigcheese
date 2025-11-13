@@ -21,6 +21,9 @@ class Transaction extends Model
         return $this->belongsTo(User::class);
     }
 
+    protected $casts = [
+        'transaction_date' => 'datetime',
+    ];
     /**
      * Mendefinisikan relasi many-to-one ke model Category.
      * Satu transaksi termasuk dalam satu kategori.
