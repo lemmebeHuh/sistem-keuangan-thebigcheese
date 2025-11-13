@@ -58,6 +58,55 @@
                 </div>
             </div>
 
+            <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg mb-6">
+            <div class="p-6 text-gray-900">
+                <form method="GET" action="{{ route('transactions.index') }}">
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+
+        {{-- Search input --}}
+        <div class="md:col-span-2">
+            <label for="search" class="block font-medium text-sm text-gray-700">Cari (Ket/Kategori)</label>
+            <input type="text" name="search" id="search" 
+                   class="block mt-1 w-full rounded-md shadow-sm border-gray-300" 
+                   placeholder="Ketik keterangan atau kategori..."
+                   value="{{ request('search') }}">
+        </div>
+
+        {{-- Start Date --}}
+        <div>
+            <label for="start_date" class="block font-medium text-sm text-gray-700">Mulai Tanggal</label>
+            <input type="date" name="start_date" id="start_date" 
+                   class="block mt-1 w-full rounded-md shadow-sm border-gray-300" 
+                   value="{{ request('start_date') }}">
+        </div>
+
+        {{-- End Date --}}
+        <div>
+            <label for="end_date" class="block font-medium text-sm text-gray-700">Sampai Tanggal</label>
+            <input type="date" name="end_date" id="end_date" 
+                   class="block mt-1 w-full rounded-md shadow-sm border-gray-300" 
+                   value="{{ request('end_date') }}">
+        </div>
+
+    </div>
+
+    {{-- Buttons --}}
+    <div class="mt-4 flex items-center gap-2">
+        <button type="submit" class="inline-flex items-center px-4 py-2 bg-gray-800 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-gray-700">
+            Filter
+        </button>
+
+        {{-- Tombol Reset: sekarang cek semua filter --}}
+        @if(request('search') || request('start_date') || request('end_date'))
+            <a href="{{ route('transactions.index') }}" class="inline-flex items-center px-4 py-2 bg-white border border-gray-300 rounded-md font-semibold text-xs text-gray-700 uppercase tracking-widest shadow-sm hover:bg-gray-50">
+                Reset
+            </a>
+        @endif
+    </div>
+</form>
+            </div>
+        </div>
+        {{-- AKHIR BAGIAN BARU --}}
             {{-- Tabel Riwayat Transaksi --}}
             <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
                 <div class="p-6 text-gray-900">
@@ -101,7 +150,7 @@
                     </div>
                     {{-- Link Paginasi --}}
                     <div class="mt-4">
-                        {{ $transactions->links() }}
+                        {{ $transactions->withQueryString()->links() }}
                     </div>
                 </div>
             </div>

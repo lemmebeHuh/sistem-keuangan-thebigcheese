@@ -6,23 +6,56 @@ use App\Models\Transaction;
 use App\Models\Category;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Carbon\Carbon;
 
 class TransactionController extends Controller
 {
-    public function index()
-    {
-        $user = Auth::user();
-        // Ganti get() menjadi paginate() untuk membatasi data per halaman
-        $transactions = Transaction::where('user_id', $user->id)
-                            ->with('category')
-                            ->latest('transaction_date')
-                            ->paginate(10); // Menampilkan 10 transaksi per halaman
-        
-        $incomeCategories = Category::where('type', 'income')->get();
-        $expenseCategories = Category::where('type', 'expense')->get();
+    public function index(Request $request) 
+{
+    $user = Auth::user();
+    $keyword = $request->input('search'); 
 
-        return view('transactions.index', compact('transactions', 'incomeCategories', 'expenseCategories'));
-    }
+    // --- Ambil input tanggal ---
+    $startDate = $request->input('start_date') 
+        ? Carbon::parse($request->input('start_date'))->startOfDay() 
+        : null;
+    $endDate = $request->input('end_date')
+        ? Carbon::parse($request->input('end_date'))->endOfDay()
+        : null;
+
+    $query = Transaction::where('user_id', $user->id)
+                        ->with('category');
+
+    // Filter Keyword (Sudah ada)
+    $query->when($keyword, function ($query, $keyword) {
+        $query->where(function ($subQuery) use ($keyword) {
+            $subQuery->where('description', 'like', "%{$keyword}%")
+                     ->orWhereHas('category', function ($categoryQuery) use ($keyword) {
+                         $categoryQuery->where('name', 'like', "%{$keyword}%");
+                     });
+        });
+    });
+
+    // --- TAMBAHKAN FILTER TANGGAL ---
+    // Filter Start Date
+    $query->when($startDate, function ($query, $startDate) {
+        $query->where('transaction_date', '>=', $startDate);
+    });
+
+    // Filter End Date
+    $query->when($endDate, function ($query, $endDate) {
+        $query->where('transaction_date', '<=', $endDate);
+    });
+    // --- AKHIR FILTER TANGGAL ---
+
+    $transactions = $query->latest('transaction_date')
+                           ->paginate(10);
+
+    $incomeCategories = Category::where('type', 'income')->get();
+    $expenseCategories = Category::where('type', 'expense')->get();
+
+    return view('transactions.index', compact('transactions', 'incomeCategories', 'expenseCategories'));
+}
 
     public function store(Request $request)
     {
