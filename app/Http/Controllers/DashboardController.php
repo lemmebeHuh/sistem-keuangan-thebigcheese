@@ -71,8 +71,6 @@ class DashboardController extends Controller
         $lineChartIncome = $lineChartData->pluck('total_income');
         $lineChartExpense = $lineChartData->pluck('total_expense');
 
-
-        // 2. Data untuk Grafik Lingkaran (Pie Chart) - (Logika diperbarui)
         $pieChartDataFromTransactions = Transaction::where('user_id', $user->id)
             ->whereHas('category', function ($query) {
                 $query->where('type', 'expense');

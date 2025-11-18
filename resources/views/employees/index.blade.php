@@ -92,7 +92,7 @@
                                     <tr>
                                         <td class="px-6 py-4 whitespace-nowrap">{{ \Carbon\Carbon::parse($pr->payment_date)->format('d M Y') }}</td>
                                         <td class="px-6 py-4 whitespace-nowrap">{{ $pr->employee->name }}</td>
-                                        <td class="px-6 py-4 whitespace-nowrap text-right font-medium text-red-600">Rp {{ number_format($pr->amount, 0, ',', '.') }}</td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-right font-medium text-black-600">Rp {{ number_format($pr->amount, 0, ',', '.') }}</td>
                                         <td class="px-6 py-4 whitespace-nowrap text-center text-sm font-medium">
                                             <button @click="editModal = true; payroll = {{ $pr }}" class="text-indigo-600 hover:text-indigo-900">Edit</button>
                                             <form action="{{ route('payrolls.destroy', $pr) }}" method="POST" class="inline-block ml-4" onsubmit="return confirm('Anda yakin ingin menghapus data gaji ini?');">
