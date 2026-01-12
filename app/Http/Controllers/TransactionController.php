@@ -58,18 +58,29 @@ class TransactionController extends Controller
 }
 
     public function store(Request $request)
-    {
-        $request->validate([
-            'amount' => 'required|numeric|min:0',
-            'category_id' => 'required|exists:categories,id',
-            'transaction_date' => 'required|date',
-            'description' => 'nullable|string',
-        ]);
+{
+    $request->validate([
+        'category_id' => 'required|exists:categories,id',
+        'quantity' => 'required|numeric|min:1',
+        'price_per_unit' => 'required|numeric|min:0',
+        'transaction_date' => 'required|date',
+        'description' => 'nullable|string',
+    ]);
 
-        Auth::user()->transactions()->create($request->all());
+    // HITUNG OTOMATIS
+    $amount = $request->quantity * $request->price_per_unit;
 
-        return redirect()->route('transactions.index')->with('success', 'Transaksi berhasil dicatat.');
-    }
+    Auth::user()->transactions()->create([
+        'category_id' => $request->category_id,
+        'quantity' => $request->quantity,
+        'price_per_unit' => $request->price_per_unit,
+        'amount' => $amount,
+        'description' => $request->description,
+        'transaction_date' => $request->transaction_date,
+    ]);
+
+    return redirect()->route('transactions.index')->with('success', 'Transaksi berhasil dicatat.');
+}
 
     public function update(Request $request, Transaction $transaction)
     {

@@ -6,7 +6,7 @@ export default defineConfig({
         host: '0.0.0.0', // Tetap listen di semua interface
         hmr: {
             
-            host: '172.23.171.242', // <-- GANTI DENGAN IP LOKAL LAPTOP ANDA
+            host: '192.168.43.111', // <-- GANTI DENGAN IP LOKAL LAPTOP ANDA
         },
         cors: true
     },

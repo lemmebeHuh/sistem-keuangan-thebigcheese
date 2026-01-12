@@ -17,44 +17,64 @@
             <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg mb-6">
                 <div class="p-6 text-gray-900">
                     <h3 class="text-lg font-medium mb-4">Catat Transaksi Baru</h3>
-                    <form action="{{ route('transactions.store') }}" method="POST">
-                        @csrf
-                        <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
-                            <div>
-                                <label for="transaction_date" class="block font-medium text-sm text-gray-700">Tanggal</label>
-                                <input type="date" name="transaction_date" id="transaction_date" class="block mt-1 w-full rounded-md shadow-sm border-gray-300" value="{{ date('Y-m-d') }}" required>
-                            </div>
-                            <div>
-                                <label for="category_id" class="block font-medium text-sm text-gray-700">Kategori</label>
-                                <select name="category_id" id="category_id" class="block mt-1 w-full rounded-md shadow-sm border-gray-300" required>
-                                    <option value="">Pilih Kategori</option>
-                                    <optgroup label="Pemasukan">
-                                        @foreach ($incomeCategories as $category)
-                                            <option value="{{ $category->id }}">{{ $category->name }}</option>
-                                        @endforeach
-                                    </optgroup>
-                                    <optgroup label="Pengeluaran">
-                                        @foreach ($expenseCategories as $category)
-                                            <option value="{{ $category->id }}">{{ $category->name }}</option>
-                                        @endforeach
-                                    </optgroup>
-                                </select>
-                            </div>
-                            <div>
-                                <label for="amount" class="block font-medium text-sm text-gray-700">Jumlah (Rp)</label>
-                                <input type="number" name="amount" id="amount" step="100" class="block mt-1 w-full rounded-md shadow-sm border-gray-300" required>
-                            </div>
-                            <div>
-                                <label for="description" class="block font-medium text-sm text-gray-700">Keterangan</label>
-                                <input type="text" name="description" id="description" class="block mt-1 w-full rounded-md shadow-sm border-gray-300">
+                    <form action="{{ route('transactions.store') }}" method="POST" x-data="{ qty: 1, price: 0 }">
+                    @csrf
+                    <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                        <div>
+                            <label class="block font-medium text-sm text-gray-700">Tanggal</label>
+                            <input type="date" name="transaction_date" class="block mt-1 w-full rounded-md shadow-sm border-gray-300" value="{{ date('Y-m-d') }}" required>
+                        </div>
+                        <div>
+                            <label class="block font-medium text-sm text-gray-700">Kategori</label>
+                            <select name="category_id" class="block mt-1 w-full rounded-md shadow-sm border-gray-300" required>
+                                <option value="">Pilih Kategori</option>
+                                <optgroup label="Pemasukan">
+                                    @foreach ($incomeCategories as $category)
+                                        <option value="{{ $category->id }}">{{ $category->name }}</option>
+                                    @endforeach
+                                </optgroup>
+                                <optgroup label="Pengeluaran">
+                                    @foreach ($expenseCategories as $category)
+                                        <option value="{{ $category->id }}">{{ $category->name }}</option>
+                                    @endforeach
+                                </optgroup>
+                            </select>
+                        </div>
+
+                        {{-- REVISI: Input Harga Satuan --}}
+                        <div>
+                            <label class="block font-medium text-sm text-gray-700">Harga Satuan (Rp)</label>
+                            <input type="number" name="price_per_unit" x-model.number="price" class="block mt-1 w-full rounded-md shadow-sm border-gray-300" required>
+                        </div>
+
+                        {{-- REVISI: Input Kuantitas --}}
+                        <div>
+                            <label class="block font-medium text-sm text-gray-700">Jumlah (Qty)</label>
+                            <input type="number" name="quantity" x-model.number="qty" class="block mt-1 w-full rounded-md shadow-sm border-gray-300" required>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mt-4">
+                        <div class="md:col-span-3">
+                            <label class="block font-medium text-sm text-gray-700">Keterangan</label>
+                            <input type="text" name="description" class="block mt-1 w-full rounded-md shadow-sm border-gray-300">
+                        </div>
+                        
+                        {{-- BAGIAN BARU: Menampilkan Total Otomatis --}}
+                        <div class="flex flex-col justify-end">
+                            <label class="block font-medium text-sm text-gray-500 italic">Total Otomatis:</label>
+                            <div class="text-xl font-bold text-indigo-600">
+                                Rp <span x-text="(qty * price).toLocaleString('id-ID')"></span>
                             </div>
                         </div>
-                        <div class="mt-4">
-                            <button type="submit" class="inline-flex items-center px-4 py-2 bg-gray-800 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-gray-700">
-                                Simpan Transaksi
-                            </button>
-                        </div>
-                    </form>
+                    </div>
+
+                    <div class="mt-4">
+                        <button type="submit" class="inline-flex items-center px-4 py-2 bg-gray-800 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-gray-700">
+                            Simpan Transaksi
+                        </button>
+                    </div>
+                </form>
                 </div>
             </div>
 

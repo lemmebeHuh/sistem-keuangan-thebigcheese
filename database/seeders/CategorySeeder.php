@@ -17,10 +17,12 @@ class CategorySeeder extends Seeder
 
         $categories = [
             // --- Pemasukan (Income) ---
+            ['name' => 'Modal Disetor (Owner)', 'type' => 'income'], // Masuk income karena menambah kas
             ['name' => 'Penjualan Makanan (Dine-in)', 'type' => 'income'],
             ['name' => 'Penjualan Minuman (Dine-in)', 'type' => 'income'],
             ['name' => 'Penjualan Online (GoFood/GrabFood)', 'type' => 'income'],
             ['name' => 'Penjualan Catering / Event', 'type' => 'income'],
+            
             
             // --- Pengeluaran (Expense) ---
             ['name' => 'Bahan Baku - Daging & Ikan', 'type' => 'expense'],
